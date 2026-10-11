@@ -63,7 +63,7 @@ cursor.execute("""
 conn.commit()
 patient1=Patient("lisa",1,"090672311",16)
 doctor1=Doctor("Dr.mary",1,"dentistry")
-appointment1=appointment(1,1,1,"2026-10-12","10.00")
+appointment1=appointment(1,1,1,"2026-10-12","10.00").
 print(patient1.name)
 print(doctor1.name)
 print(appointment1.date)
