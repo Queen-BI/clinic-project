@@ -68,6 +68,38 @@ class appointment:
         conn.commit()
         conn.close()
         print("deletted")
+
+
+    def get_appointment_details(self):
+        conn=sqlite3.connect("hospital.db")
+        cursor=conn.cursor()
+
+        
+        cursor.execute("""
+        SELECT 
+            appointment."appointment_id",
+            appointment."patient_id",
+            COALESCE(patients.name,appointment.name),
+            doctor.name,
+            doctor.specialization,
+            appointment.date,
+            appointment.time
+        FROM appointment
+        LEFT JOIN patients
+            ON appointment."patient_id"=patients.patient_id
+        LEFT JOIN doctor
+            ON appointment."doctor_id"=doctor.doctor_id
+            """)
+        results=cursor.fetchall()
+        for row in results:
+            print(row)
+        conn.close()
+        return results
+
+
+
+       
+        
       
 
         
@@ -123,7 +155,14 @@ print(appointment1.date)
 appointment2=appointment(3,2,3,"ali","2023-12-13","10.00")
 appointment2.book_appointment()
 appointment2.update_appointment("2023-23-12","12.00")
-appointment2.cancel_appointment()
+print(appointment1.get_appointment_details())
+
+conn=sqlite3.connect("hospital.db")
+cursor=conn.cursor()
+
+cursor.execute("PRAGMA table_info(appointment)")
+print(cursor.fetchall())
+conn.close()
 
 
 
@@ -138,7 +177,30 @@ appointment2.cancel_appointment()
 # """)
 # print(cursor.fetchone())
 # conn.close()
-cursor.execute("SELECT * FROM appointment")
-print(cursor.fetchall())
+# cursor.execute("SELECT * FROM appointment")
+# print(cursor.fetchall())
+# conn=sqlite3.connect("hospital.db")
+# cursor=conn.cursor()
 
+# cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+# print(cursor.fetchall())
+# conn.close()
 
+conn=sqlite3.connect("hospital.db")
+cursor=conn.cursor()
+
+# cursor.execute("PRAGMA table_info(appointment)")
+# print(cursor.fetchall())
+
+cursor.execute("SELECT * FROM Patients")
+# print("Appointments:",
+patients=cursor.fetchall()
+for patient in patients:
+    print(patient)
+conn.close()
+
+# )
+
+# cursor.execute("PRAGMA tale_info(patient)")
+# print("Patient coloumns:",
+# cursor.fetchall())
