@@ -6,6 +6,24 @@ class Patient:
         self.patient_id=patient_id
         self.number=number
         self.age=age
+    def search_patient(self,search_value):
+        conn=sqlite3.connect("hospital.db")
+        cursor=conn.cursor()
+        cursor.execute("""
+            SELECT * FROM PatientS
+            WHERE patient_id=? OR name=?
+            """, (search_value,search_value))
+        result=cursor.fetchone()
+        print("search result:",result)
+        if result:
+            print(result)
+        else:
+            print("patient not found")
+        conn.close()
+        return result
+        
+
+
         
 
 # doctor#
@@ -142,27 +160,27 @@ cursor.execute("""
         time TEXT
 )
 """)
-conn.commit()
-patient1=Patient("lisa",1,"090672311",16)
-doctor1=Doctor("Dr.mary",1,"dentistry")
-appointment1=appointment(1,1,1,"seki","2026-10-12","10.00")
-print(patient1.name)
-print(doctor1.name)
-print(appointment1.date)
+# conn.commit()
+# patient1=Patient("lisa",1,"090672311",16)
+# doctor1=Doctor("Dr.mary",1,"dentistry")
+# appointment1=appointment(1,1,1,"seki","2026-10-12","10.00")
+# print(patient1.name)
+# print(doctor1.name)
+# print(appointment1.date)
 
 
 
-appointment2=appointment(3,2,3,"ali","2023-12-13","10.00")
-appointment2.book_appointment()
-appointment2.update_appointment("2023-23-12","12.00")
-print(appointment1.get_appointment_details())
+# appointment2=appointment(3,2,3,"ali","2023-12-13","10.00")
+# appointment2.book_appointment()
+# appointment2.update_appointment("2023-23-12","12.00")
+# print(appointment1.get_appointment_details())
 
-conn=sqlite3.connect("hospital.db")
-cursor=conn.cursor()
+# conn=sqlite3.connect("hospital.db")
+# cursor=conn.cursor()
 
-cursor.execute("PRAGMA table_info(appointment)")
-print(cursor.fetchall())
-conn.close()
+# cursor.execute("PRAGMA table_info(appointment)")
+# print(cursor.fetchall())
+# conn.close()
 
 
 
