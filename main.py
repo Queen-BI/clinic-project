@@ -1,4 +1,4 @@
-
+import sqlite3
 # patient#
 class Patient:
     def __init__(self,name,patient_id,number,age):
@@ -34,7 +34,7 @@ class Doctor:
         self.specialization=specialization
 
 #appointment#
-class appointment:
+class Appointment:
     def __init__(self,appointment_id,patient_id,doctor_id,name,date,time):
         self.appointment_id=appointment_id
         self.patient_id=patient_id
@@ -45,9 +45,8 @@ class appointment:
     def book_appointment(self):
         conn=sqlite3.connect("hospital.db")
         cursor=conn.cursor()
-
         cursor.execute("""
-        INSERT INTO appointment (patient_id,doctor_id,name,date,time)
+        INSERT INTO appointment ("patient_id", "doctor_id", "name", "date", "time")
         VALUES(?,?,?,?,?)
         """,(
             self.patient_id,
@@ -57,7 +56,8 @@ class appointment:
             self.time
         ))
         conn.commit()
-        print("appointment saved")
+        # cursor.execute("SELECT * FROM appointment ORDER BY ROWID DESC LIMIT 1")
+        # print("newest saved appointment:",cursor.fetchone())
         conn.close()
 
     def update_appointment(self,new_date,new_time):
@@ -91,26 +91,23 @@ class appointment:
     def get_appointment_details(self):
         conn=sqlite3.connect("hospital.db")
         cursor=conn.cursor()
-
         
         cursor.execute("""
         SELECT 
             appointment."appointment_id",
             appointment."patient_id",
-            COALESCE(patients.name,appointment.name),
+            patients.name,
             doctor.name,
             doctor.specialization,
             appointment.date,
             appointment.time
         FROM appointment
         LEFT JOIN patients
-            ON appointment."patient_id"=patients.patient_id
+            ON appointment.patient_id=patients.patient_id
         LEFT JOIN doctor
-            ON appointment."doctor_id"=doctor.doctor_id
+            ON CAST(appointment."doctor_id" AS INTEGER)=doctor.doctor_id
             """)
         results=cursor.fetchall()
-        for row in results:
-            print(row)
         conn.close()
         return results
 
@@ -124,7 +121,7 @@ class appointment:
 
 
 
-import sqlite3
+
 conn=sqlite3.connect("hospital.db")
 cursor=conn.cursor()
 
@@ -204,18 +201,18 @@ cursor.execute("""
 # print(cursor.fetchall())
 # conn.close()
 
-conn=sqlite3.connect("hospital.db")
-cursor=conn.cursor()
+# conn=sqlite3.connect("hospital.db")
+# cursor=conn.cursor()
 
-# cursor.execute("PRAGMA table_info(appointment)")
-# print(cursor.fetchall())
+# # cursor.execute("PRAGMA table_info(appointment)")
+# # print(cursor.fetchall())
 
-cursor.execute("SELECT * FROM Patients")
-# print("Appointments:",
-patients=cursor.fetchall()
-for patient in patients:
-    print(patient)
-conn.close()
+# cursor.execute("SELECT * FROM Patients")
+# # print("Appointments:",
+# patients=cursor.fetchall()
+# for patient in patients:
+#     print(patient)
+# conn.close()
 
 # )
 

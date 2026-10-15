@@ -2,7 +2,10 @@ import sqlite3
 import tkinter as tk 
 from tkinter import messagebox
 
-from main import Patient,appointment
+from main import Patient,Appointment
+from main import Appointment
+import main
+
 conn=sqlite3.connect("hospital.db")
 cursor=conn.cursor()
 
@@ -387,9 +390,107 @@ tk.Label(
 ).pack()
 appointment_time_entry=tk.Entry(appointment1)
 appointment_time_entry.pack(pady=5)
+#return to dashboard#
+
+def show_dashboard4():
+    dashboard.pack(fill="both",expand="True")
+    registration_frame.pack_forget()
+    search_frame.pack_forget()
+    history_frame.pack_forget()
+    appointment1.pack_forget()
+return_button2=tk.Button(
+appointment1,
+text=" ← back to dashboard",
+font=("Arial",12),
+bg="#F6F2EA",
+fg="#000",
+command=show_dashboard4
+).pack(anchor="ne",padx=20)
 
 #save#
-def
+def save_appointment():
+    patient_id=patient_id_entry.get().strip()
+    doctor_id=doctor_id_entry.get().strip()
+    date=appointment_date_entry.get().strip()
+    time=appointment_time_entry.get().strip()
+
+    if not all([patient_id,doctor_id,date,time]):
+        messagebox.showerror(
+            "missing details",
+            "please fill in all feilds"
+        )
+        return
+    try:
+        patient_id=int(patient_id)
+        doctor_id=int(doctor_id)
+        # print("doctor id entered:",doctor_id)
+
+        conn=sqlite3.connect("hospital.db")
+        cursor=conn.cursor()
+
+        cursor.execute(
+            "SELECT name FROM patients WHERE patient_id=?",
+            (patient_id,)
+        )
+        patient=cursor.fetchone()
+
+        cursor.execute(
+            "SELECT name FROM Doctor WHERE doctor_id=?",(doctor_id,)
+        )
+
+        doctor=cursor.fetchone()
+
+        if patient is None:
+            messagebox.showerror(
+                "Error","doctor_id not found"
+            )
+            conn.close()
+            return
+        conn.close()
+
+        appointment=Appointment(
+            None,
+            patient_id,
+            doctor_id,
+            patient[0],
+            date,
+            time
+        )
+        print("about to book")
+        appointment.book_appointment()
+        print("booking")
+        messagebox.showinfo(
+            "success","appointment booked successfully"
+            )
+        patient_id_entry.delete(0,tk.END)
+        doctor_id_entry.delete(0,tk.END)
+        appointment_date_entry.delete(0,tk.END)
+        appointment_time_entry.delete(0,tk.END)
+    except ValueError:
+        messagebox.showerror(
+            "invalid input",
+            "patient id and doctor id must be numbers."
+            )
+    except sqlite3.Error as error:
+        import traceback
+        traceback.print_exc()
+        messagebox.showerror(
+            "database error",
+            str(error)
+        )
+
+#book_ appointment button#
+tk.Button(
+    appointment1,
+    text="book appointment",
+    command=save_appointment,
+    bg="#147d78",
+    fg="#000"
+).pack(pady=15)
+
+
+
+
 
 
 
@@ -397,8 +498,9 @@ def
 def show_appointment_history():
     dashboard.pack_forget()
     history_frame.pack(fill="both",expand=True)
-appointment=appointment(None,None,None,None,None,None)
+appointment=Appointment(None,None,None,None,None,None)
 result=appointment.get_appointment_details()
+
 print("total appointments:",len(result))
 if result:
     print("appointments found")
